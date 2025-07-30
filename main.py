@@ -1,11 +1,13 @@
 # Base Character class
 class Character:
-    def __init__(self, name, health, attack_power, heals_left):
+    def __init__(self, name, health, attack_power, heals_left, special1, special2):
         self.name = name
         self.health = health
         self.attack_power = attack_power
         self.max_health = health # Store the original health for maximum limit
-        self.heals_left = heals_left  # Store Heals left for each character
+        self.heals_left = heals_left  ## Store Heals left for each character
+        self.special1 = special1 ## Special abilities
+        self.special2 = special2
 
     def attack(self, opponent):
         opponent.health -= self.attack_power
@@ -16,12 +18,12 @@ class Character:
     def display_stats(self):
         print(f"{self.name}'s Stats - Health: {self.health}/{self.max_health}, Attack Power: {self.attack_power}")
 
-    # Add your heal method here
+    # Heal Method
     def heal(self):
 
         if self.heals_left > 0:
             self.health += 20
-            self.heals_left -= 1
+            self.heals_left -= 1 ##Subtract one heal from total available heals
             if self.health > self.max_health:
                self.health = self.max_health ##Only Regen to max health
             print(f"{self.name} \nregenerates 20 health! Current health: {self.health} \nHeals left: {self.heals_left}")
@@ -32,16 +34,24 @@ class Character:
 # Warrior class (inherits from Character)
 class Warrior(Character):
     def __init__(self, name):
-        super().__init__(name, health=160, attack_power=45, heals_left=3)  # Boost health and attack power
+        super().__init__(name, health=160, attack_power=40, heals_left=3, special1=self.power_ax, special2=self.defensive_stance) 
 
-    # Add your power attack method here
-    #Two Unqiue Abilities for each Character
+    ##Specials????
+    def power_ax(self, opponent):
+        damage = 65
+        opponent.health -= damage
+        print(f"{self.name} uses Power Ax! Deals {damage} damage.")
+
+    def defensive_stance(self, opponent):
+        print(f"{self.name} uses Defensive Stance! Reduces damage taken next turn.")
+        opponent.damage = opponent.damage/2
+        # Implement effect as needed
 
 
 # Mage class (inherits from Character)
 class Mage(Character):
     def __init__(self, name):
-        super().__init__(name, health=100, attack_power=35, heals_left=3)  # Boost attack power
+        super().__init__(name, health=100, attack_power=35, heals_left=3) 
 
     # Add your cast spell method here
     # Summon Minions?
@@ -67,7 +77,7 @@ Possibly another Character class depending on time/functionality
 # EvilWizard class (inherits from Character)
 class EvilWizard(Character):
     def __init__(self, name):
-        super().__init__(name, health=350, attack_power=15, heals_left=None)  # Lower attack power
+        super().__init__(name, health=350, attack_power=15, heals_left=None)  
     
     # Evil Wizard's special ability: it can regenerate health
     def regenerate(self):
@@ -103,6 +113,22 @@ def create_character():
     else:
         print("Invalid choice. Defaulting to Warrior.")
         return Warrior(name)
+    
+##Create choice for special ability- This is definintely WRONG
+def special(player, wizard):
+    while True:
+        print('\n --- Choose Special Ability to use ---')
+        print(f'1. {player.special1.__name__.replace("_", " ").title()}') ##Title of function?
+        print(f'2. {player.special2.__name__.replace("_", " ").title()}')
+        choice = input('Choose an action: ')
+        if choice == '1':
+            player.special1(wizard)
+            break
+        elif choice == '2':
+            player.special2(wizard)
+            break
+        else:
+            print("Invalid choice, try again.")
 
 # Battle function with user menu for actions
 def battle(player, wizard):
