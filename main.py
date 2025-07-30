@@ -44,9 +44,9 @@ class Character:
             self.heals_left -= 1 ##Subtract one heal from total available heals
             if self.health > self.max_health:
                self.health = self.max_health ##Only Regen to max health
-            print(f"{self.name} \nregenerates 20 health! Current health: {self.health} \nHeals left: {self.heals_left}")
+            print(f"{self.name} regenerates 20 health! Current health: {self.health} \nHeals left: {self.heals_left}")
         else:
-            print(f"{self.name} \nhas no heals left!")
+            print(f"{self.name} has no heals left!")
 
 
 # Warrior class (inherits from Character)
@@ -90,17 +90,35 @@ class Mage(Character): #Good amount of health
 
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, health=90, attack_power=55, heals_left=3)
+        super().__init__(name, health=90, attack_power=45, heals_left=3, special1=self.power_shot, special2=self.triple_shot)
 
-    #Add a power archer shot here
-    #One more special ability (Triple shot?)
+    def power_shot(self, opponent):
+        #Boring
+        damage = 65 
+        opponent.health -= damage
+        print(f'{self.name} shoots a power shot! Deals {damage} damage.')
+    
+    def triple_shot(self, opponent):
+        damage = self.attack_power * 3
+        opponent.health -= damage
+        print(f'{self.name} shoots a power shot! Deals {damage} damage.')
 
 class Bard(Character):
     def __init__(self, name):
-        super().__init__(name, health=75, attack_power=30, heals_left=3)
+        super().__init__(name, health=75, attack_power=30, heals_left=3, special1=self.music_charm, special2=self.shield)
 
     #Special to stop Wizards attack for a turn (charm him with music)
-    #Boost health/become invincible for several turns
+    def music_charm(self, opponent):
+        if not hasattr(opponent, "original_attack_power"):
+            opponent.original_attack_power = opponent.attack_power
+        opponent.attack_power = 0
+        opponent.charmed_turns = 3  # Number of turns to be charmed
+        print(f'\n{self.name} charmed the Evil Wizard with a song! He deals 0 damage for {opponent.charmed_turns} turn(s).')
+    
+    def shield(self, opponent):
+        #Allows for over max health, like a shield
+        self.health += 60
+        print(f'{self.name} used a shield! Protecting 60 HP.')
 
 '''
 Possibly another Character class depending on time/functionality
@@ -117,7 +135,7 @@ class EvilWizard(Character):
            self.health += 5
            if self.health > self.max_health:
               self.health = self.max_health ##Only Regen to max health
-           print(f"{self.name} regenerates 5 health! Current health: {self.health}")
+           print(f"\n{self.name} regenerates 5 health! Current health: {self.health}")
         else:
            print(f"{self.name} is at max health!")
 
@@ -173,7 +191,16 @@ def battle(player, wizard):
         # Evil Wizard's turn to attack and regenerate
         if wizard.health > 0:
             wizard.regenerate()
-            wizard.attack(player)
+            
+            # Handle charm effect (temporary attack power reduction)
+            if hasattr(wizard, "charmed_turns") and wizard.charmed_turns > 0:
+                print(f"{wizard.name} is charmed and cannot attack this turn!")
+                wizard.charmed_turns -= 1
+                if wizard.charmed_turns == 0 and hasattr(wizard, "original_attack_power"):
+                    wizard.attack_power = wizard.original_attack_power
+                    del wizard.original_attack_power  # Clean up
+            else:
+                wizard.attack(player)
 
         if player.health <= 0:
             print(f"{player.name} has been defeated!")
