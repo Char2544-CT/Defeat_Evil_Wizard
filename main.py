@@ -1,10 +1,11 @@
 # Base Character class
 class Character:
-    def __init__(self, name, health, attack_power):
+    def __init__(self, name, health, attack_power, heals_left):
         self.name = name
         self.health = health
         self.attack_power = attack_power
-        self.max_health = health  # Store the original health for maximum limit
+        self.max_health = health # Store the original health for maximum limit
+        self.heals_left = heals_left  # Store Heals left for each character
 
     def attack(self, opponent):
         opponent.health -= self.attack_power
@@ -16,12 +17,22 @@ class Character:
         print(f"{self.name}'s Stats - Health: {self.health}/{self.max_health}, Attack Power: {self.attack_power}")
 
     # Add your heal method here
+    def heal(self):
+
+        if self.heals_left > 0:
+            self.health += 20
+            self.heals_left -= 1
+            if self.health > self.max_health:
+               self.health = self.max_health ##Only Regen to max health
+            print(f"{self.name} \nregenerates 20 health! Current health: {self.health} \nHeals left: {self.heals_left}")
+        else:
+            print(f"{self.name} \nhas no heals left!")
 
 
 # Warrior class (inherits from Character)
 class Warrior(Character):
     def __init__(self, name):
-        super().__init__(name, health=160, attack_power=45)  # Boost health and attack power
+        super().__init__(name, health=160, attack_power=45, heals_left=3)  # Boost health and attack power
 
     # Add your power attack method here
     #Two Unqiue Abilities for each Character
@@ -30,21 +41,21 @@ class Warrior(Character):
 # Mage class (inherits from Character)
 class Mage(Character):
     def __init__(self, name):
-        super().__init__(name, health=100, attack_power=35)  # Boost attack power
+        super().__init__(name, health=100, attack_power=35, heals_left=3)  # Boost attack power
 
     # Add your cast spell method here
     # Summon Minions?
 
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, health=90, attack_power=55)
+        super().__init__(name, health=90, attack_power=55, heals_left=3)
 
     #Add a power archer shot here
     #One more special ability (Triple shot?)
 
 class Bard(Character):
     def __init__(self, name):
-        super().__init__(name, health=75, attack_power=30)
+        super().__init__(name, health=75, attack_power=30, heals_left=3)
 
     #Special to stop Wizards attack for a turn (charm him with music)
     #Boost health/become invincible for several turns
@@ -56,7 +67,7 @@ Possibly another Character class depending on time/functionality
 # EvilWizard class (inherits from Character)
 class EvilWizard(Character):
     def __init__(self, name):
-        super().__init__(name, health=150, attack_power=15)  # Lower attack power
+        super().__init__(name, health=350, attack_power=15, heals_left=None)  # Lower attack power
     
     # Evil Wizard's special ability: it can regenerate health
     def regenerate(self):
@@ -110,11 +121,11 @@ def battle(player, wizard):
             # Call the special ability here
             pass  # Implement this
         elif choice == '3':
-            # Call the heal method here
-            pass  # Implement this
+            player.heal()
+            continue ##Allow another move after a heal.
         elif choice == '4':
             player.display_stats()
-            battle(player, wizard) ##Prevents Dark Wizard from regenerating when checking stats.
+            continue ##Prevents Dark Wizard from regenerating when checking stats.
         else:
             print("Invalid choice, try again.")
             continue
