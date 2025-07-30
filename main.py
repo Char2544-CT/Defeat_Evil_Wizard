@@ -1,3 +1,5 @@
+import random
+
 # Base Character class
 class Character:
     def __init__(self, name, health, attack_power, heals_left, special1, special2):
@@ -14,6 +16,22 @@ class Character:
         print(f"{self.name} attacks {opponent.name} for {self.attack_power} damage!")
         if opponent.health <= 0:
             print(f"{opponent.name} has been defeated!")
+
+    ##Create choice for special ability
+    def special_attack(self, opponent):
+        while True:
+            print('\n --- Choose Special Ability to use ---')
+            print(f'1. {self.special1.__name__.replace("_", " ").title()}') ##Title of function but replacing _ and capitalizing with .title()
+            print(f'2. {self.special2.__name__.replace("_", " ").title()}')
+            choice = input('Choose an action: ')
+            if choice == '1':
+                self.special1(opponent)
+                break
+            elif choice == '2':
+                self.special2(opponent)
+                break
+            else:
+                print("Invalid choice, try again.")
 
     def display_stats(self):
         print(f"{self.name}'s Stats - Health: {self.health}/{self.max_health}, Attack Power: {self.attack_power}")
@@ -36,25 +54,39 @@ class Warrior(Character):
     def __init__(self, name):
         super().__init__(name, health=160, attack_power=40, heals_left=3, special1=self.power_ax, special2=self.defensive_stance) 
 
-    ##Specials????
+    ##Specials
     def power_ax(self, opponent):
         damage = 65
         opponent.health -= damage
         print(f"{self.name} uses Power Ax! Deals {damage} damage.")
 
+    # Function Does not work at the moment
     def defensive_stance(self, opponent):
         print(f"{self.name} uses Defensive Stance! Reduces damage taken next turn.")
-        opponent.damage = opponent.damage/2
-        # Implement effect as needed
+        opponent.attack_power / 2 #This is wrong- need correct implementation here
 
 
 # Mage class (inherits from Character)
-class Mage(Character):
+class Mage(Character): #Good amount of health
     def __init__(self, name):
-        super().__init__(name, health=100, attack_power=35, heals_left=3) 
+        super().__init__(name, health=100, attack_power=35, heals_left=3, special1=self.cast_spell, special2=self.summon_minions) 
 
-    # Add your cast spell method here
-    # Summon Minions?
+    def cast_spell(self, opponent):
+        damage = 50
+        opponent.health -= damage
+        print(f'{self.name} casted a fireball! Deals {damage} damage.')
+    
+    def summon_minions(self, opponent):
+        minion_damage = 10
+
+        ##Generate random amount of minions and have them do damage
+        random_min_list = [1,2,3,4,5,6,7,8,9,10]
+        random.shuffle(random_min_list)
+        first_value = random_min_list[0]
+
+        opponent.health -= first_value * minion_damage
+        
+        print(f'\n{first_value} minions do 10 damage each! Dealing {first_value * 10} damage!')
 
 class Archer(Character):
     def __init__(self, name):
@@ -77,7 +109,7 @@ Possibly another Character class depending on time/functionality
 # EvilWizard class (inherits from Character)
 class EvilWizard(Character):
     def __init__(self, name):
-        super().__init__(name, health=350, attack_power=15, heals_left=None)  
+        super().__init__(name, health=350, attack_power=15, heals_left=None, special1=None, special2=None)  
     
     # Evil Wizard's special ability: it can regenerate health
     def regenerate(self):
@@ -94,8 +126,8 @@ def create_character():
     print("Choose your character class:")
     print("1. Warrior")
     print("2. Mage")
-    print("3. Archer")  # Add Archer
-    print("4. Paladin")  # Add Paladin
+    print("3. Archer")
+    print("4. Bard") 
     
     class_choice = input("Enter the number of your class choice: ")
     name = input("\nEnter your character's name: ")
@@ -105,30 +137,13 @@ def create_character():
     elif class_choice == '2':
         return Mage(name)
     elif class_choice == '3':
-        # Add Archer class here        
-        pass
+        return Archer(name)      
     elif class_choice == '4':
-        # Add Paladin class here
-        pass
+        return Bard(name)
     else:
         print("Invalid choice. Defaulting to Warrior.")
         return Warrior(name)
-    
-##Create choice for special ability- This is definintely WRONG
-def special(player, wizard):
-    while True:
-        print('\n --- Choose Special Ability to use ---')
-        print(f'1. {player.special1.__name__.replace("_", " ").title()}') ##Title of function?
-        print(f'2. {player.special2.__name__.replace("_", " ").title()}')
-        choice = input('Choose an action: ')
-        if choice == '1':
-            player.special1(wizard)
-            break
-        elif choice == '2':
-            player.special2(wizard)
-            break
-        else:
-            print("Invalid choice, try again.")
+
 
 # Battle function with user menu for actions
 def battle(player, wizard):
@@ -144,8 +159,7 @@ def battle(player, wizard):
         if choice == '1':
             player.attack(wizard)
         elif choice == '2':
-            # Call the special ability here
-            pass  # Implement this
+            player.special_attack(wizard)
         elif choice == '3':
             player.heal()
             continue ##Allow another move after a heal.
