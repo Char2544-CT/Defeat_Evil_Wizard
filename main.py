@@ -53,7 +53,7 @@ class Character:
 
     ##Limit number of specials to prevent spamming of specials
     def limit_specials(self):
-        if self.specials_left > 0:
+        if self.specials_left > 1:
             self.specials_left -= 1
             print(f'{self.name} has a total of {self.specials_left} left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
         else:
