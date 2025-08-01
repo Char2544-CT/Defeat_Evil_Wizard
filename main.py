@@ -2,7 +2,7 @@ import random
 
 # Base Character class
 class Character:
-    def __init__(self, name, health, attack_power, heals_left, special1, special2):
+    def __init__(self, name, health, attack_power, heals_left, special1, special2, specials_left):
         self.name = name
         self.health = health
         self.attack_power = attack_power
@@ -10,6 +10,9 @@ class Character:
         self.heals_left = heals_left  ## Store Heals left for each character
         self.special1 = special1 ## Special abilities
         self.special2 = special2
+        self.specials_left = specials_left
+
+#Choices when battle begins
 
     def attack(self, opponent):
         opponent.health -= self.attack_power
@@ -21,7 +24,7 @@ class Character:
     def special_attack(self, opponent):
         while True:
             print('\n --- Choose Special Ability to use ---')
-            print(f'1. {self.special1.__name__.replace("_", " ").title()}') ##Title of function but replacing _ and capitalizing with .title()
+            print(f'1. {self.special1.__name__.replace("_", " ").title()}') ##__name__ of function but replacing _ and capitalizing with .title()
             print(f'2. {self.special2.__name__.replace("_", " ").title()}')
             choice = input('Choose an action: ')
             if choice == '1':
@@ -48,33 +51,44 @@ class Character:
         else:
             print(f"{self.name} has no heals left!")
 
+    ##Limit number of specials to prevent spamming of specials
+    def limit_specials(self):
+        if self.specials_left > 0:
+            self.specials_left -= 1
+            print(f'{self.name} has a total of {self.specials_left} left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
+        else:
+            print(f'{self.name} has no specials left!')
+
+'''
+Character classes
+'''
 
 # Warrior class (inherits from Character)
 class Warrior(Character):
     def __init__(self, name):
-        super().__init__(name, health=160, attack_power=40, heals_left=3, special1=self.power_ax, special2=self.defensive_stance) 
+        super().__init__(name, health=160, attack_power=40, heals_left=3, special1=self.power_ax, special2=self.defensive_stance, specials_left=5) 
 
     ##Specials
     def power_ax(self, opponent):
         damage = 65
         opponent.health -= damage
-        print(f"{self.name} uses Power Ax! Deals {damage} damage.")
+        print(f"\n{self.name} uses Power Ax! Deals {damage} damage.")
 
     # Function Does not work at the moment
     def defensive_stance(self, opponent):
-        print(f"{self.name} uses Defensive Stance! Reduces damage taken next turn.")
+        print(f"\n{self.name} uses Defensive Stance! Reduces damage taken next turn.")
         opponent.attack_power / 2 #This is wrong- need correct implementation here
 
 
 # Mage class (inherits from Character)
 class Mage(Character): #Good amount of health
     def __init__(self, name):
-        super().__init__(name, health=100, attack_power=35, heals_left=3, special1=self.cast_spell, special2=self.summon_minions) 
+        super().__init__(name, health=100, attack_power=35, heals_left=3, special1=self.cast_spell, special2=self.summon_minions, specials_left=5) 
 
     def cast_spell(self, opponent):
         damage = 50
         opponent.health -= damage
-        print(f'{self.name} casted a fireball! Deals {damage} damage.')
+        print(f'\n{self.name} casted a fireball! Deals {damage} damage.')
     
     def summon_minions(self, opponent):
         minion_damage = 10
@@ -90,22 +104,22 @@ class Mage(Character): #Good amount of health
 
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, health=90, attack_power=45, heals_left=3, special1=self.power_shot, special2=self.triple_shot)
+        super().__init__(name, health=90, attack_power=45, heals_left=3, special1=self.power_shot, special2=self.triple_shot, specials_left=5)
 
     def power_shot(self, opponent):
         #Boring
         damage = 65 
         opponent.health -= damage
-        print(f'{self.name} shoots a power shot! Deals {damage} damage.')
+        print(f'\n{self.name} shoots a power shot! Deals {damage} damage.')
     
     def triple_shot(self, opponent):
         damage = self.attack_power * 3
         opponent.health -= damage
-        print(f'{self.name} shoots a power shot! Deals {damage} damage.')
+        print(f'\n{self.name} shoots a power shot! Deals {damage} damage.')
 
 class Bard(Character):
     def __init__(self, name):
-        super().__init__(name, health=75, attack_power=30, heals_left=3, special1=self.music_charm, special2=self.shield)
+        super().__init__(name, health=75, attack_power=30, heals_left=3, special1=self.music_charm, special2=self.shield, specials_left=5)
 
     #Special to stop Wizards attack for a turn (charm him with music)
     def music_charm(self, opponent):
@@ -118,16 +132,16 @@ class Bard(Character):
     def shield(self, opponent):
         #Allows for over max health, like a shield
         self.health += 60
-        print(f'{self.name} used a shield! Protecting 60 HP.')
+        print(f'\n{self.name} used a shield! Protecting 60 HP.')
 
 '''
-Possibly another Character class depending on time/functionality
+Wizard Functionality varies slightly
 '''
 
 # EvilWizard class (inherits from Character)
 class EvilWizard(Character):
     def __init__(self, name):
-        super().__init__(name, health=350, attack_power=15, heals_left=None, special1=None, special2=None)  
+        super().__init__(name, health=350, attack_power=15, heals_left=None, special1=None, special2=None, specials_left=None)  
     
     # Evil Wizard's special ability: it can regenerate health
     def regenerate(self):
@@ -137,7 +151,11 @@ class EvilWizard(Character):
               self.health = self.max_health ##Only Regen to max health
            print(f"\n{self.name} regenerates 5 health! Current health: {self.health}")
         else:
-           print(f"{self.name} is at max health!")
+           print(f"\n{self.name} is at max health!")
+
+'''
+Start Game Functions
+'''
 
 # Function to create player character based on user input
 def create_character():
@@ -178,6 +196,7 @@ def battle(player, wizard):
             player.attack(wizard)
         elif choice == '2':
             player.special_attack(wizard)
+            player.limit_specials()
         elif choice == '3':
             player.heal()
             continue ##Allow another move after a heal.
