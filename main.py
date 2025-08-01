@@ -55,7 +55,7 @@ class Character:
     def limit_specials(self):
         if self.specials_left > 0:
             self.specials_left -= 1
-            print(f'{self.name} has a total of {self.specials_left} left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
+            print(f'\n{self.name} has a total of {self.specials_left} left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
             return True
         else:
             print(f'{self.name} has no specials left!')
@@ -101,18 +101,18 @@ class Mage(Character): #Good amount of health
         first_value = random_min_list[0]
 
         opponent.health -= first_value * minion_damage
-        
         print(f'\n{first_value} minions do 10 damage each! Dealing {first_value * 10} damage!')
 
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, health=90, attack_power=45, heals_left=3, special1=self.power_shot, special2=self.triple_shot, specials_left=5)
+        super().__init__(name, health=90, attack_power=25, heals_left=3, special1=self.rain_of_arrows, special2=self.triple_shot, specials_left=5)
 
-    def power_shot(self, opponent):
-        #Boring
-        damage = 65 
+    def rain_of_arrows(self, opponent):
+        r = random.randint(1,10)
+        damage = r * 10
+        ##Done a little bit simpler than creating an array but I wanted to see the difference.
         opponent.health -= damage
-        print(f'\n{self.name} shoots a power shot! Deals {damage} damage.')
+        print(f'\n{self.name} shoots a rain of arrows and {r} hit! Dealing {damage} damage.')
     
     def triple_shot(self, opponent):
         damage = self.attack_power * 3
