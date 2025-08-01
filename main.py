@@ -53,11 +53,13 @@ class Character:
 
     ##Limit number of specials to prevent spamming of specials
     def limit_specials(self):
-        if self.specials_left > 1:
+        if self.specials_left > 0:
             self.specials_left -= 1
             print(f'{self.name} has a total of {self.specials_left} left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
+            return True
         else:
             print(f'{self.name} has no specials left!')
+            return False
 
 '''
 Character classes
@@ -195,8 +197,10 @@ def battle(player, wizard):
         if choice == '1':
             player.attack(wizard)
         elif choice == '2':
-            player.special_attack(wizard)
-            player.limit_specials()
+            if player.limit_specials(): ##If limit_specials() returns true in other words.
+                player.special_attack(wizard)
+            else:
+                continue  ## Skip wizard's turn if no specials left
         elif choice == '3':
             player.heal()
             continue ##Allow another move after a heal.
