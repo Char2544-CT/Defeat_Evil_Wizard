@@ -11,6 +11,7 @@ class Character:
         self.special1 = special1 ## Special abilities
         self.special2 = special2
         self.specials_left = specials_left
+        self.defending = False
 
 #Choices when battle begins
 
@@ -55,7 +56,7 @@ class Character:
     def limit_specials(self):
         if self.specials_left > 0:
             self.specials_left -= 1
-            print(f'\n{self.name} has a total of {self.specials_left} left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
+            print(f'\n{self.name} has a total of {self.specials_left} specials left! Use them wisely {self.__class__.__name__}.') ##Calls the name of class i.e. 'Warrior'
             return True
         else:
             print(f'{self.name} has no specials left!')
@@ -64,7 +65,7 @@ class Character:
 '''
 Character classes
 '''
-
+##Done
 # Warrior class (inherits from Character)
 class Warrior(Character):
     def __init__(self, name):
@@ -79,7 +80,7 @@ class Warrior(Character):
     # Function Does not work at the moment
     def defensive_stance(self, opponent):
         print(f"\n{self.name} uses Defensive Stance! Reduces damage taken next turn.")
-        opponent.attack_power / 2 #This is wrong- need correct implementation here
+        self.defending = True ##Sets a flag for the next attack
 
 
 # Mage class (inherits from Character)
@@ -94,7 +95,6 @@ class Mage(Character): #Good amount of health
     
     def summon_minions(self, opponent):
         minion_damage = 10
-
         ##Generate random amount of minions and have them do damage
         random_min_list = [1,2,3,4,5,6,7,8,9,10]
         random.shuffle(random_min_list)
@@ -103,9 +103,10 @@ class Mage(Character): #Good amount of health
         opponent.health -= first_value * minion_damage
         print(f'\n{first_value} minions do 10 damage each! Dealing {first_value * 10} damage!')
 
+##DONE
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, health=90, attack_power=25, heals_left=3, special1=self.rain_of_arrows, special2=self.triple_shot, specials_left=5)
+        super().__init__(name, health=90, attack_power=25, heals_left=3, special1=self.rain_of_arrows, special2=self.double_shot, specials_left=5)
 
     def rain_of_arrows(self, opponent):
         r = random.randint(1,10)
@@ -114,11 +115,12 @@ class Archer(Character):
         opponent.health -= damage
         print(f'\n{self.name} shoots a rain of arrows and {r} hit! Dealing {damage} damage.')
     
-    def triple_shot(self, opponent):
-        damage = self.attack_power * 3
+    def double_shot(self, opponent):
+        damage = self.attack_power * 2
         opponent.health -= damage
         print(f'\n{self.name} shoots a power shot! Deals {damage} damage.')
 
+##Done
 class Bard(Character):
     def __init__(self, name):
         super().__init__(name, health=75, attack_power=30, heals_left=3, special1=self.music_charm, special2=self.shield, specials_left=5)
@@ -133,8 +135,8 @@ class Bard(Character):
     
     def shield(self, opponent):
         #Allows for over max health, like a shield
-        self.health += 60
-        print(f'\n{self.name} used a shield! Protecting 60 HP.')
+        self.health += 50
+        print(f'\n{self.name} used a shield! Protecting 50 HP.')
 
 '''
 Wizard Functionality varies slightly
@@ -223,7 +225,14 @@ def battle(player, wizard):
                     wizard.attack_power = wizard.original_attack_power
                     del wizard.original_attack_power  # Clean up
             else:
-                wizard.attack(player)
+                # Check if player is defending
+                if hasattr(player, "defending") and player.defending:
+                    reduced_damage = wizard.attack_power // 6 ##Wizard attack divided by 6
+                    player.health -= reduced_damage
+                    print(f"{wizard.name} attacks {player.name} for {reduced_damage} damage (defensive stance)!")
+                    player.defending = False  # Reset defending flag
+                else:
+                    wizard.attack(player)
 
         if player.health <= 0:
             print(f"{player.name} has been defeated!")
