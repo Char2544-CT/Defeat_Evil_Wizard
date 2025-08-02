@@ -11,7 +11,6 @@ class Character:
         self.special1 = special1 ## Special abilities
         self.special2 = special2
         self.specials_left = specials_left
-        self.defending = False ##Flag Creation set to False
 
 #Choices when battle begins
 
