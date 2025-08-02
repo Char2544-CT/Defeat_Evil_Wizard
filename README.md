@@ -4,8 +4,8 @@
 
 ### Base character class is created with added attributes of heals_left, special1, special2, and specials_left- meaning all characters will have these attributes.
 
--special*attack function:
-A while loop runs, ensuring if there is an invalid choice, the loop runs again. We are looking for an input of either '1' or '2' considering each character has 2 special abilities. Since the character and functions are not known we use a format print statement to get the title of the function, replacing the pythonic '*' with a space and capitalizing the function.
+-special_attack function:
+A while loop runs, ensuring if there is an invalid choice, the loop runs again. We are looking for an input of either '1' or '2' considering each character has 2 special abilities. Since the character and functions are not known we use a format print statement to get the title of the function, replacing the pythonic underscore with a space and capitalizing the function.
 
 -heal function:
 Each character (besides the Evil Wizard) is grated 3 heals total. So when the heal method is called, the player heals for 20 and heals left decrements by 1. If health is at max, health will default to max health, ensuring the player doesn't go beyond their max. If a player heals, they are allowed to make another move without the wizard attacking or regenerating.
