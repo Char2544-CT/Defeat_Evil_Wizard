@@ -11,13 +11,13 @@ class Character:
         self.special1 = special1 ## Special abilities
         self.special2 = special2
         self.specials_left = specials_left
-        self.defending = False
+        self.defending = False ##Flag Creation set to False
 
 #Choices when battle begins
 
     def attack(self, opponent):
         opponent.health -= self.attack_power
-        print(f"{self.name} attacks {opponent.name} for {self.attack_power} damage!")
+        print(f"\n{self.name} attacks {opponent.name} for {self.attack_power} damage!")
         if opponent.health <= 0:
             print(f"{opponent.name} has been defeated!")
 
@@ -69,7 +69,8 @@ Character classes
 # Warrior class (inherits from Character)
 class Warrior(Character):
     def __init__(self, name):
-        super().__init__(name, health=160, attack_power=40, heals_left=3, special1=self.power_ax, special2=self.defensive_stance, specials_left=5) 
+        super().__init__(name, health=140, attack_power=35, heals_left=3, special1=self.power_ax, special2=self.defensive_stance, specials_left=5) 
+        self.defending_rounds = 0
 
     ##Specials
     def power_ax(self, opponent):
@@ -77,16 +78,15 @@ class Warrior(Character):
         opponent.health -= damage
         print(f"\n{self.name} uses Power Ax! Deals {damage} damage.")
 
-    # Function Does not work at the moment
     def defensive_stance(self, opponent):
-        print(f"\n{self.name} uses Defensive Stance! Reduces damage taken next turn.")
-        self.defending = True ##Sets a flag for the next attack
+        print(f"\n{self.name} uses Defensive Stance! Reduces damage taken next 2 turns.")
+        self.defending_rounds = 2
 
 
 # Mage class (inherits from Character)
 class Mage(Character): #Good amount of health
     def __init__(self, name):
-        super().__init__(name, health=100, attack_power=35, heals_left=3, special1=self.cast_spell, special2=self.summon_minions, specials_left=5) 
+        super().__init__(name, health=100, attack_power=25, heals_left=3, special1=self.cast_spell, special2=self.summon_minions, specials_left=5) 
 
     def cast_spell(self, opponent):
         damage = 50
@@ -226,11 +226,11 @@ def battle(player, wizard):
                     del wizard.original_attack_power  # Clean up
             else:
                 # Check if player is defending
-                if hasattr(player, "defending") and player.defending:
+                if hasattr(player, "defending_rounds") and player.defending_rounds > 0:
                     reduced_damage = wizard.attack_power // 6 ##Wizard attack divided by 6
                     player.health -= reduced_damage
                     print(f"{wizard.name} attacks {player.name} for {reduced_damage} damage (defensive stance)!")
-                    player.defending = False  # Reset defending flag
+                    player.defending_rounds -= 1
                 else:
                     wizard.attack(player)
 
